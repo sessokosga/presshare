@@ -1,0 +1,17 @@
+{
+    "name": "senor16/presshare",
+    "description": "Share the content of your phone's clipboard with your computer",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Sesso Kosga Bamokaï Michée",
+            "email": "kosgasesso@gmail.com"
+        }
+    ],
+	"autoload":{
+		"psr-4":{
+			"App\\":"app/"
+		}
+	},
+    "require": {}
+}
