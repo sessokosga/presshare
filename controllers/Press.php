@@ -87,16 +87,19 @@ class Press extends Controller{
 			if(isset($_POST['p_title']) && isset($_POST['p_content']) && isset($_POST['p_genre'])){
 				extract($_POST);			
 				
-				$p_content = str_replace("[enter]","\n",$p_content);
-				$success = $pres->update($id,$p_title, $p_content, $p_genre);
-				$message= $success ? "Press modifié ave succès" : "Une erreur s'est produite. Veuiller réessayer.";
-				$press = $pres->getPress($id);
-				$this->render('update',compact('title','press','p_title','p_content','p_genre', 'success','message'));
+				$pres = new Pres();
+				if($pres->exists($p_title)){
+					$result['success']=false;					
+					$result['message'] = "Champ(s) non valide(s)";
+					$result['errorInfo']['title']=Errors::showError("Ce titre est déja utilisé");										
+				}else{								
+					$p_content = str_replace("[enter]","\n",$p_content);
+					$result['success'] = $pres->update($id,$p_title, $p_content, $p_genre);
+					$result['message']= $result['success'] ? "Press modifié ave succès" : "Une erreur s'est produite. Veuiller réessayer.";
+					$press = $pres->getPress($id);
+				}
+				$this->render('update',compact('title','press', 'result'));
 			}			
-			
-			
-			
-				
 			$this->render('update',compact('title','press'));
 		}else{			
 			$error = new Errors();

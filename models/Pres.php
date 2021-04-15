@@ -48,8 +48,7 @@ class Pres extends Model{
 			$query = $this->connexion->prepare($sql);
 			$query->execute();
 			return true;
-		}catch(PDOException $exception){
-			
+		}catch(PDOException $exception){			
 			return false;
 			
 		}			
@@ -85,6 +84,7 @@ class Pres extends Model{
 			$query->execute();			
 			return true;
 		}catch(PDOException $exception){
+			return false;
 			die('Erreur update: '.$exception->getMessage());						
 		}
 	}
