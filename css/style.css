@@ -1,0 +1,346 @@
+/*
+	Header
+*/
+header{
+	padding:10px 0;
+	display:grid;
+	grid-template-areas:	
+	"logo search search";	
+}
+
+.logo{	
+	grid-area: logo;
+	margin:0;
+	margin-top:0;	
+	color:blue;
+}
+
+.logo a{
+	text-decoration:none;
+}
+
+.logo a:visited{
+	color:blue;
+}
+
+#logo-share{
+}
+
+#logo-clipboard{
+	
+}
+
+.form-search{
+	margin-top:5px;
+	grid-area:search;
+	height:35px;	
+	display:grid;
+	grid-template-areas:
+	"q-search q-search btn-search";
+	column-gap:10px;
+	
+}
+
+.btn-search{
+	grid-area:btn-search;
+	font-weight:bold;
+	width:40%;
+	border : 2px solid #dadada !important;
+	
+}
+
+.q-search{	
+	grid-area:q-search;	
+	padding:8px;
+	border-radius: 3px;
+	border:none;
+	background:#F4F4F4;
+}
+
+
+
+/*
+	Body
+*/
+
+td,th{
+	border: 1px solid #dadada;	
+	padding:5px;
+}
+table{	
+	border-collapse: collapse;	
+	width:100%;
+	font-size:0.9em;
+}
+
+table a{
+	text-decoration:none;
+	color:black;
+}
+
+table a:hover{
+	text-decoration: underline;
+}
+
+.content{
+	/*max-width:60%;
+	background:blue;*/
+}
+
+.date{
+	
+}
+
+.alert{
+	font-size: 1.1em;
+	border-radius: 5px;	
+	padding:5px;
+	margin:5px;
+}
+
+
+.edit,.delete{
+	width:20px;
+	margin-left: 10px;
+	display:inline-block;
+}
+
+body{
+	margin:auto;
+	max-width:80%;		
+	font-family:  Verdana,sans-serif;
+	font-size:1em;
+}
+
+
+
+
+input[type=text],select,textarea{	
+	border-radius:3px;
+	padding:5px;
+	margin-bottom:10px;
+	border: 2px solid #dadada;
+	font-family:inherit;
+	font-size:0.9em;
+}
+
+input[type=text],textarea{
+	width:90%;
+}
+
+select{
+	width:60%;
+}
+
+
+.del-add{
+	width:25%;
+	padding:5px;			
+	margin-top:40px;
+	margin-right:20px;	
+}
+
+.del-add, .btn-search{
+	background-color:#fff;
+	border: 2px solid #dadada;
+	border-radius:3px;	
+	font-weight:bold;
+}
+
+.del-add:hover, .btn-search:hover{
+	color:blue;
+	cursor:pointer;
+}
+
+label{	
+	display:block;		
+	margin-bottom:2px;
+}
+
+.form-press{	
+	display:grid;
+	grid-template-areas: 
+	"form-press-left form-press-right";	
+}
+
+.form-press-left{	
+	grid-area: form-press-left;
+}
+
+.form-press-right{
+	
+	grid-area: form-press-right;
+}
+
+
+.button{
+	display:inline-block;
+	text-decoration:none;
+	color:blue;
+	background-color:white;
+	border : 1px solid #0000e33b;
+	border-radius:3px;
+	padding: 3px 10px;
+	font-size:initial;	
+	cursor:pointer;
+	font-weight: normal;
+}
+
+.genre{
+	display:inline-block;
+	text-decoration:none;
+	color:blue;
+	background-color:none;
+	border : 1px solid #dadada;
+	border-radius:30px;
+	padding: 3px 10px;
+	font-size:inherit;	
+	cursor:pointer;
+	margin:5px;
+	font-weight: normal;
+}
+
+.genre:hover{
+	/*color:blue;*/
+	border : 1px solid #a6a3a3;
+	text-decoration:none !important;
+}
+
+
+
+
+
+
+.button:hover{
+	border: 1px solid blue;
+}
+
+img{
+	max-width:100%;
+}
+
+
+#btn-close-form-press{
+	display:none;
+}
+
+.svg{
+	vertical-align:middle;
+}
+
+.btn-add-press{
+	display:none;
+}
+
+/*
+	affichage d'erreur
+*/
+.error{
+	color:tomato;
+	border : 2px solid red;
+}
+
+.page-error{
+	color:tomato;
+}
+
+
+
+.success{	
+	border:2px solid #4edb4e;
+	color:#4edb4e;
+}
+
+.parent-press{
+	display:grid;
+	grid-template-columns: repeat(4,1fr);	
+	grid-template-rows: min-content;
+	column-gap:5px;
+	row-gap:5px;
+}
+
+.press{	
+	border-radius:5px;
+	padding:0.5em;	
+	/*height: min-content;*/
+}
+
+.link{
+	background-color:#eaf3d7;
+}
+
+.text{
+	background-color:#f1e9e9;
+}
+.press p a{
+	text-decoration:none;
+	color:black;
+}
+
+.press p a:hover{
+	text-decoration: underline;
+}
+
+
+@media only screen and (max-width: 640px) {	
+	body{
+		max-width:90%;
+		font-size:0.8em;
+	}
+	
+	
+	
+	header{		
+		grid-template-areas:
+		"logo"
+		"search";
+	}
+	
+	.btn-search{
+		width:50%;		
+	}
+	
+	
+	
+	.form-press{	
+		grid-template-areas: 
+		"form-press-left"
+		"form-press-right";			
+	}
+	.add-press,.date{
+		display:none;
+	}
+	
+	.btn-add-press{
+		display:inline-block;
+		margin-top:10px;
+	}
+	
+	select{
+		width:94%;
+	}
+	
+	.del-add{
+		margin-top:0;
+		color:blue;
+	}
+	
+	h2 .button{
+		border: 1px solid blue;	
+		font-size:.7em;
+	}
+	
+	#btn-close-form-press{
+		display:inline;
+	}
+}
+ 
+ /*
+	Footer
+*/
+footer{
+	background-color : #7b7272;
+	color: white;
+	padding:10px;
+	margin-top:10px;
+}

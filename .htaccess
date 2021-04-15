@@ -1,0 +1,7 @@
+RewriteEngine On
+RewriteCond %{QUERY_STRING} ^q=(.*)$
+RewriteRule ^([a-zA-Z0-9\-\_\/\?]*)$ index.php?p=$1/%1
+RewriteRule ^([a-zA-Z0-9\-\_\/\?]*)$ index.php?p=$1
+
+
+
