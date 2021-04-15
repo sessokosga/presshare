@@ -18,13 +18,7 @@ abstract class Controller{
 			$script = "";
 		require_once(ROOT.'views/layouts/default.php');
 	}
-	
-	//Function that load a Model entity
-	//args: $model => The name of the model
-	public function loadModel(string $model){
-		require_once ROOT."/models/".ucfirst(strtolower($model)).".php";		
-	}
-	
+		
 	//Function to add a script on a page
 	//args: $file => the of the script file
 	public function loadScript(string $file){

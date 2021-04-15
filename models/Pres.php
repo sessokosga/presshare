@@ -2,7 +2,7 @@
 namespace App\Models;
 use App\Model;
 use \PDO;
-
+use \PDOException;
 class Pres extends Model{
 	
 	//Set the table name and connect to the database
@@ -42,15 +42,33 @@ class Pres extends Model{
 				$content => the content of the press
 				$genre => the genre of the press
 	*/
-	public function add(string $title, string $content, string $genre){
+	public function add(string $title, string $content, string $genre){		
 		try{
 			$sql = "INSERT INTO ".$this->table."(p_title,p_content,p_genre,p_author_id) VALUES('".$title."','".$content."','".$genre."',1)";		
 			$query = $this->connexion->prepare($sql);
 			$query->execute();
 			return true;
 		}catch(PDOException $exception){
-			die('Erreur add :'.$exception->getMessage());
+			
+			return false;
+			
 		}			
+	}
+	
+	/*
+		Verify if an Press is already in the records
+		It prevents duplicate entry errors
+		args: $title => the title of a press
+	*/
+	public function exists(string $title){
+		try{
+			$sql = "SELECT p_id FROM ".$this->table." WHERE p_title='".$title."'";
+			$query = $this->connexion->prepare($sql);
+			$query->execute();
+			return $query->fetch(PDO::FETCH_OBJ);
+		}catch(PDOException $exception){			
+			die('Erreur exists : '.$exception->getMessage());
+		}
 	}
 	
 	/*
@@ -62,7 +80,7 @@ class Pres extends Model{
 	*/
 	public function update($id,$title,$content,$genre){
 		try{
-			$sql = "UPDATE ".$this->table." SET p_title='".$title."', p_content='".$content."', p_genre='".$genre."' WHERE p_id=".$id;			
+			$sql = "UPDATE ".$this->table." SET p_title='".$title."', p_content='".$content."', p_genre='".$genre."', p_last_modified = NOW() WHERE p_id=".$id;			
 			$query = $this->connexion->prepare($sql);
 			$query->execute();			
 			return true;

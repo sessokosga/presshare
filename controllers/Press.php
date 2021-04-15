@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use App\Controller;
 use App\Models\Pres;
+use App\Controllers\Errors;
 
 
 class Press extends Controller{
@@ -14,8 +15,7 @@ class Press extends Controller{
 		if($genre===''){
 			$this->render('index',['title'=>'Press', 'content'=>'Bienvenu dans Press']);
 		}else{
-			$title=ucfirst(strtolower($genre));
-			$this->loadModel('Pres');
+			$title=ucfirst(strtolower($genre));			
 			$pres = new Pres();
 			$press = $pres->getPressByGenre(str_replace('s','',$title));		
 			$message=count($press)." Press trouvés";
@@ -30,18 +30,30 @@ class Press extends Controller{
 		$title="Ajouter un Press";			
 		if(isset($_POST['p_title']) && isset($_POST['p_content']) && isset($_POST['p_genre'])){
 			extract($_POST);
-			if(strlen($p_title)>0 && strlen($p_content)>1 &&  in_array($p_genre,['Text','Link'])){
-				$this->loadModel('Pres');
+			if(strlen($p_title)>0 && strlen($p_content)>1 &&  in_array($p_genre,['Text','Link'])){								
 				$pres = new Pres();
-				$success = $pres->add($p_title,$p_content,$p_genre);
-				if($success){
-					$message = "Press ajouté avec success.";					
+				if($pres->exists($p_title)){
+					$result['success']=false;					
+					$result['message'] = "Champ(s) non valide(s)";
+					$result['errorInfo']['title']=Errors::showError("Ce titre est déja utilisé");					
+					$result['title']=$p_title;
+					$result['content']=$p_content;
+					$result['genre']=$p_genre;
+				}else{									
+					$p_content = str_replace("[enter]","\n",$p_content);
+					$success = $pres->add($p_title,$p_content,$p_genre);
+					if($success){
+						$result['success']=true;
+						$result['message'] = "Press ajouté avec success.";					
+					}else{
+						$result['success']=false;
+						$message="Une erreur s'est produite. Veuiller réessayer";
+					}
 				}
-			}else{
-				$success = false;
+			}else{				
 				$message= "Veuiller remplir tous les champs.";
 			}			
-			$this->render('add',compact('success', 'title', 'message'));
+			$this->render('add',compact('result', 'title'));
 		}else{
 			$this->render('add',compact('title'));
 		}		
@@ -53,7 +65,6 @@ class Press extends Controller{
 	public function addx(){
 		$title="Ajouter un Press";			
 		for($i=0; $i<30; $i++){
-			$this->loadModel('Pres');
 			$pres = new Pres();
 			$genre=['Text','Link'];
 			$success = $pres->add(str_replace('+',' ',base64_encode(random_bytes(rand(3,12)))),str_replace('+',' ',base64_encode(random_bytes(rand(10,20)))),$genre[rand(0,1)]);						
@@ -69,18 +80,23 @@ class Press extends Controller{
 		args : $id => the id of the press
 	*/
 	public function update($id){
-		$title = "Modifier un Press";
-		$this->loadModel('Pres');
+		$title = "Modifier un Press";		
 		$pres = new Pres();
 		$press = $pres->getPress($id);
 		if($press){
 			if(isset($_POST['p_title']) && isset($_POST['p_content']) && isset($_POST['p_genre'])){
-				extract($_POST);
+				extract($_POST);			
+				
+				$p_content = str_replace("[enter]","\n",$p_content);
 				$success = $pres->update($id,$p_title, $p_content, $p_genre);
 				$message= $success ? "Press modifié ave succès" : "Une erreur s'est produite. Veuiller réessayer.";
 				$press = $pres->getPress($id);
 				$this->render('update',compact('title','press','p_title','p_content','p_genre', 'success','message'));
 			}			
+			
+			
+			
+				
 			$this->render('update',compact('title','press'));
 		}else{			
 			$error = new Errors();
@@ -92,8 +108,7 @@ class Press extends Controller{
 		It manage the deletion of a press
 	*/
 	public function deletepress($id){
-		$title="Suppression d'un Press";
-		$this->loadModel('Pres');
+		$title="Suppression d'un Press";		
 		$pres = new Pres();
 		$press = $pres->getPress($id);
 		if($press){
@@ -116,7 +131,6 @@ class Press extends Controller{
 		if(strlen($q)>0){
 			extract($_GET);
 			$q=htmlspecialchars($q);
-			$this->loadModel('Pres');
 			$pres = new Pres();
 			$press = $pres->search($q);
 			$title='"'.$q."' Résultats de recherche" ;

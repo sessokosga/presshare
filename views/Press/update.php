@@ -7,10 +7,9 @@ if(isset($success)){
 		echo '<div class="alert error">'.$message.'</div>';
 	}
 }
-echo '
-	<button class="button btn-add-press" id="btn-add-press">Ajouter un press</button>
+echo '	
 	<div id="add-press" class="add-press">
-		<h2>Modifier un Press <button class="button" id="btn-close-form-press"> <img class="svg"  src="'.ROOT_URL.'svg/times-circle.svg" alt="Fermer"> Fermer</button></h2>
+		<h2>Modifier un Press </h2>
 		<form method="post" class="form-press" action="'.ROOT_URL.'press/update/'.$press->id.'">
 			<div class="form-press-left">
 				<label for="p.title">Titre :</label> 
