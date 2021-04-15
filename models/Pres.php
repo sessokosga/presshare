@@ -78,13 +78,17 @@ class Pres extends Model{
 				$genre => the new genre
 	*/
 	public function update($id,$title,$content,$genre){
+		$result =[];
+		$result['success']=false;
 		try{
 			$sql = "UPDATE ".$this->table." SET p_title='".$title."', p_content='".$content."', p_genre='".$genre."', p_last_modified = NOW() WHERE p_id=".$id;			
 			$query = $this->connexion->prepare($sql);
 			$query->execute();			
-			return true;
+			$result['success']=true;
+			return $result;
 		}catch(PDOException $exception){
-			return false;
+			$result['code']=$exception->getCode();
+			return $result;
 			die('Erreur update: '.$exception->getMessage());						
 		}
 	}
