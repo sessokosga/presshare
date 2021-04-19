@@ -14,12 +14,13 @@ class Pres extends Model{
 	//Get the 6 last press
 	public function getLastPress(){
 		try{
-			$sql="SELECT p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre FROM ".$this->table." ORDER BY p_created_at DESC LIMIT 6";
-			$query = $this->connexion->prepare($sql);
-			$query->execute();		
-			return $query->fetchAll(PDO::FETCH_OBJ);
-		}catch(PDOException $exception){
-			die('Erreur : '.$exception->getMessage());
+			$sql="SELECT p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
+			FROM {$this->table} ORDER BY p_created_at DESC LIMIT 6";
+			$query = $this->connexion->prepare($sql);			
+			$query->execute();
+			return $query->fetchAll();
+		}catch(PDOException $exception){			
+			die('Erreur getLast : '.$exception->getMessage());
 		}
 	}
 
@@ -27,10 +28,11 @@ class Pres extends Model{
 	//args: $genre => the genre of the presses you want
 	public function getPressByGenre(string $genre){
 		try{
-			$sql="SELECT  p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre FROM ".$this->table." WHERE p_genre='".$genre."'";			
+			$sql="SELECT  p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
+			FROM {$this->table} WHERE p_genre=:genre";			
 			$query = $this->connexion->prepare($sql);
-			$query->execute();		
-			return $query->fetchAll(PDO::FETCH_OBJ);
+			$query->execute(['genre'=>$genre]);		
+			return $query->fetchAll();
 		}catch(PDOException $exception){
 			die('Erreur genre : '.$exception->getMessage());
 		}
@@ -44,9 +46,13 @@ class Pres extends Model{
 	*/
 	public function add(string $title, string $content, string $genre){		
 		try{
-			$sql = "INSERT INTO ".$this->table."(p_title,p_content,p_genre,p_author_id) VALUES('".$title."','".$content."','".$genre."',1)";		
+			$sql = "INSERT INTO {$this->table} (p_title,p_content,p_genre,p_author_id) VALUES(:title, :content, :genre ,1)";		
 			$query = $this->connexion->prepare($sql);
-			$query->execute();
+			$query->execute([
+								'title'=>$title,
+								'content'=>$content,
+								'genre'=>$genre
+							]);
 			return true;
 		}catch(PDOException $exception){			
 			return false;
@@ -61,10 +67,10 @@ class Pres extends Model{
 	*/
 	public function exists(string $title){
 		try{
-			$sql = "SELECT p_id FROM ".$this->table." WHERE p_title='".$title."'";
+			$sql = "SELECT p_id FROM {$this->table} WHERE p_title= :title";
 			$query = $this->connexion->prepare($sql);
-			$query->execute();
-			return $query->fetch(PDO::FETCH_OBJ);
+			$query->execute([ 'title'=>$title]);
+			return $query->fetch();
 		}catch(PDOException $exception){			
 			die('Erreur exists : '.$exception->getMessage());
 		}
@@ -81,9 +87,13 @@ class Pres extends Model{
 		$result =[];
 		$result['success']=false;
 		try{
-			$sql = "UPDATE ".$this->table." SET p_title='".$title."', p_content='".$content."', p_genre='".$genre."', p_last_modified = NOW() WHERE p_id=".$id;			
+			$sql = "UPDATE {$this->table} SET p_title=:title, p_content=:content, p_genre=:genre, p_last_modified = NOW() WHERE p_id=:id";			
 			$query = $this->connexion->prepare($sql);
-			$query->execute();			
+			$query->execute(['title'=>$title,
+								'content'=>$content,
+								'genre'=>$genre,
+								'id'=>$id
+							]);			
 			$result['success']=true;
 			return $result;
 		}catch(PDOException $exception){
@@ -98,10 +108,10 @@ class Pres extends Model{
 	*/
 	public function getPress($id){
 		try{
-			$sql = "SELECT p_id AS id, p_title AS title, p_content AS content, p_genre AS genre FROM ".$this->table." WHERE p_id=".$id;
+			$sql = "SELECT p_id AS id, p_title AS title, p_content AS content, p_genre AS genre FROM {$this->table} WHERE p_id=:id";
 			$query = $this->connexion->prepare($sql);
-			$query->execute();
-			return $query->fetch(PDO::FETCH_OBJ);
+			$query->execute([ 'id'=>$id]);
+			return $query->fetch();
 		}catch(PDOException $exception){			
 			die('Erreur getPress : '.$exception->getMessage());
 		}

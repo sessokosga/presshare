@@ -89,16 +89,17 @@ body{
 
 
 
-input[type=text],select,textarea{	
+input[type=text],input[type=email],input[type=password],select,textarea{	
 	border-radius:3px;
-	padding:5px;
+	padding:8px;
 	margin-bottom:10px;
 	border: 2px solid #dadada;
 	font-family:inherit;
 	font-size:0.9em;
+	min-height:20px;
 }
 
-input[type=text],textarea{
+input[type=text],input[type=email],input[type=password],textarea{
 	width:90%;
 }
 
@@ -193,7 +194,7 @@ img{
 	max-width:100%;
 }
 
-.svg{
+.svg, input[type=checkbox]{
 	vertical-align:middle;
 }
 
@@ -258,7 +259,8 @@ img{
 @media only screen and (max-width: 640px) {	
 	body{
 		max-width:90%;
-		font-size:0.8em;
+		font-size:0.9em;
+		
 	}
 	
 	
@@ -271,7 +273,7 @@ img{
 	
 	.parent-press{
 		max-width:100%;
-		grid-template-columns: 1fr;			
+		grid-template-columns: 1fr 1fr;			
 	}
 
 	.press{
@@ -293,13 +295,13 @@ img{
 		margin-top:10px;
 	}
 	
-	select{
-		width:94%;
+	select,input{
+		width:100%;
 	}
 	
 	.del-add{
 		margin-top:0;
-		color:blue;
+		color:blue;		
 	}
 	
 	h2 .button{
