@@ -1,7 +1,14 @@
 RewriteEngine On
+
+RewriteRule ^login$ users/login
+RewriteRule ^signup$ users/signup
+RewriteRule ^logout$ users/logout
+
+RewriteRule ^settings/?(.*)$ users/settings/$1
+
+RewriteRule ^([a-zA-Z0-9\-\_\/\?]*)$ index.php?p=$1
 RewriteCond %{QUERY_STRING} ^q=(.*)$
 RewriteRule ^([a-zA-Z0-9\-\_\/\?]*)$ index.php?p=$1/%1
-RewriteRule ^([a-zA-Z0-9\-\_\/\?]*)$ index.php?p=$1
 
 
 

@@ -12,7 +12,7 @@ abstract class Controller{
 		$dir=explode('\\', strtolower(get_class($this)));
 		$dir = $dir[count($dir)-1];
 		require_once(ROOT.'views/'.$dir.'/'.$file.'.php');
-		if($file != 'add')
+		if($file != 'add' && $file != 'login' && $file != 'signup')
 			$add=true;
 		if(!isset($script))
 			$script = "";

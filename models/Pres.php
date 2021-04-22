@@ -11,10 +11,24 @@ class Pres extends Model{
 		$this->getConnexion();
 	}	
 	
+	/*
+		Get the author of a press
+	*/
+	public function getAuthor($id){
+		$sql = "SELECT p_author_id AS id FROM {$this->table} WHERE p_id = :id";
+		$query = $this->connexion->prepare($sql);
+		try{
+			$query->execute(['id'=>$id]);
+			return $query->fetch();
+		}catch(PDOException $exception){			
+			die('Erreur getAuthor : '.$exception->getMessage());
+		}
+	}
+	
 	//Get the 6 last press
 	public function getLastPress(){
 		try{
-			$sql="SELECT p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
+			$sql="SELECT p_author_id AS author, p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
 			FROM {$this->table} ORDER BY p_created_at DESC LIMIT 6";
 			$query = $this->connexion->prepare($sql);			
 			$query->execute();
@@ -28,8 +42,8 @@ class Pres extends Model{
 	//args: $genre => the genre of the presses you want
 	public function getPressByGenre(string $genre){
 		try{
-			$sql="SELECT  p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
-			FROM {$this->table} WHERE p_genre=:genre";			
+			$sql="SELECT  p_author_id AS author, p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
+			FROM {$this->table} WHERE p_genre=:genre LIMIT 6";			
 			$query = $this->connexion->prepare($sql);
 			$query->execute(['genre'=>$genre]);		
 			return $query->fetchAll();
@@ -44,14 +58,15 @@ class Pres extends Model{
 				$content => the content of the press
 				$genre => the genre of the press
 	*/
-	public function add(string $title, string $content, string $genre){		
+	public function add(string $title, string $content, string $genre, $author){		
 		try{
-			$sql = "INSERT INTO {$this->table} (p_title,p_content,p_genre,p_author_id) VALUES(:title, :content, :genre ,1)";		
+			$sql = "INSERT INTO {$this->table} (p_title,p_content,p_genre,p_author_id) VALUES(:title, :content, :genre ,:author)";		
 			$query = $this->connexion->prepare($sql);
 			$query->execute([
 								'title'=>$title,
 								'content'=>$content,
-								'genre'=>$genre
+								'genre'=>$genre,
+								'author'=>$author
 							]);
 			return true;
 		}catch(PDOException $exception){			
@@ -108,7 +123,7 @@ class Pres extends Model{
 	*/
 	public function getPress($id){
 		try{
-			$sql = "SELECT p_id AS id, p_title AS title, p_content AS content, p_genre AS genre FROM {$this->table} WHERE p_id=:id";
+			$sql = "SELECT  p_author_id AS author, p_id AS id, p_title AS title, p_content AS content, p_genre AS genre FROM {$this->table} WHERE p_id=:id";
 			$query = $this->connexion->prepare($sql);
 			$query->execute([ 'id'=>$id]);
 			return $query->fetch();

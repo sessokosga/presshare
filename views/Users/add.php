@@ -1,13 +1,13 @@
 <?php
 ob_start();
-echo '<h2>'.$title.'</h2>';
+echo '<h2 class="center">'.$title.'</h2>';
 if(isset($message)){
 	if(!isset($errors)){
 		echo '<div class="alert success">'.$message.'</div>';		
 		if (isset($link)) echo '<p>Un vous a été envoyé par mail pour activer votre compte</p>';
 	}else{
 		echo '<div class="alert error">'.$message.'</div>';?>
-		<form class="form" action="<?=ROOT_URL."users/add"?>" method="post">
+		<form class="form" action="<?=ROOT_URL."users/signup"?>" method="post">
 		<?php
 		if(isset($errors['pseudo'])){?>
 			<label for="a_pseudo">Pseudo <small>(20 caratères au plus)</small>:</label>
@@ -58,7 +58,7 @@ if(isset($message)){
 	}
 }
 else{?>	
-	<form class="form" action="<?=ROOT_URL."users/add"?>" method="post">
+	<form class="form" action="<?=ROOT_URL."signup"?>" method="post">
 	<label for="a_pseudo">Pseudo <small>(20 caratères au plus)</small>:</label>
 	<input type="text" required name="a_pseudo" placeholder="Ex: senor16">
 	<br>
@@ -71,12 +71,10 @@ else{?>
 	<label for="a_password_confirm">Confirmer votre mot de passe:</label>
 	<input type="password" required name="a_password_confirm" placeholder="votremotdepasse">	
 	<br>	
-	
-	<label><input type="checkbox" name="a_remember" id="a_remember" value="1">
-	Se souvenir de moi</label>
+		
 	
 	<input class="del-add" type="reset" value="Effacer">
-	<input class="del-add" type="submit" required name="insert" value="S'inscrire">
+	<input class="del-add" type="submit" required name="login" value="S'inscrire">
 	
 </form>
 <?php }

@@ -5,7 +5,7 @@ use \PDO;
 use \PDOException;
 
 class User extends Model{
-	
+
 	//Set the table name and connect to the database
 	public function __construct(){
 		$this->table = "author";
@@ -15,29 +15,48 @@ class User extends Model{
 	/*
 		Add a new user
 	*/
-	public function add(string $pseudo, string $email, string $password, string $token, string $remember_token){
-		$sql = "INSERT INTO {$this->table} (a_pseudo, a_email, a_password, a_created_at, a_confirmation_token, a_remember_token)
-				VALUES (:pseudo, :email, :password, NOW(), :token,:remember_token)";
+	public function add(string $pseudo, string $email, string $password, string $token){
+		$sql = "INSERT INTO {$this->table} (a_pseudo, a_email, a_password, a_created_at, a_confirmation_token)
+				VALUES (:pseudo, :email, :password, NOW(), :token)";
 		$query = $this->connexion->prepare($sql);
 		try{
 			$query->execute([
 								'pseudo'=>$pseudo,
 								'email'=>$email,
 								'password'=>$password,
-								'token'=>$token,
-								'remember_token'=>$remember_token
+								'token'=>$token
+
 							]);
 			return $this->connexion->lastInsertId();
 		}catch(PDOException $exception){
 			die('Erreur add user : '.$exception->getMessage());
 		}
 	}
-	
+
+	/*
+		Check user's credentials
+	*/
+	public function login(string $email, string $remember_token){
+		$sql = "SELECT * FROM {$this->table} WHERE a_email = :email OR a_pseudo = :pseudo";
+		$query= $this->connexion->prepare($sql);
+		try{
+           $query->execute(['email'=>$email, 'pseudo'=>$email]);
+           $auth= $query->fetch();
+           if(!empty($remember_token) && $auth->a_id){
+             $q = $this->connexion->prepare("UPDATE {$this->table} SET a_remember_token = :remember WHERE a_id = {$auth->a_id}");
+             $q->execute(['remember'=>$remember_token]);
+           }
+			return $auth;
+		}catch(PDOException $exception){
+			die('Erreur login user : '.$exception->getMessage());
+		}
+	}
+
 	/*
 		Update user's informations
 	*/
 	public function update(int $id,string $pseudo, string $last_name, string $first_name){
-		$sql = "UPDATE {$this->table} SET a_pseudo = :pseudo, a_first_name = :first_name, a_last_name = :last_name 
+		$sql = "UPDATE {$this->table} SET a_pseudo = :pseudo, a_first_name = :first_name, a_last_name = :last_name
 				WHERE a_id = :id";
 		$query = $this->connexion->prepare($sql);
 		try{
@@ -52,16 +71,16 @@ class User extends Model{
 			die('Erreur update user : '.$exception->getMessage());
 		}
 	}
-	
+
 	/*
 		Update user's password
 	*/
-	public function upadatePassword(int $id, string $password){
+	public function updatePassword(int $id, string $password){
 		$sql = "UPDATE {$this->table} SET a_password = :password WHERE a_id = :id";
 		$query = $this->connexion->prepare($sql);
 		try{
 			$query->execute(['id'=>$id,'password'=>$password]);
-			return true;			
+			return true;
 		}catch(PDOException $exception){
 			die('Erreur update password : '.$exception->getMessage());
 		}
@@ -70,18 +89,18 @@ class User extends Model{
 	/*
 		Update user's email
 	*/
-	public function updatePassword(int $id, string $email){
-		$sql = "UPDATE {$this->table} SET a_email = :email WHERE a_id = :id";
+	public function updateEmail(int $id, string $email,string $token){
+		$sql = "UPDATE {$this->table} SET a_email = :email, a_confirmation_token = :token WHERE a_id = :id";
 		$query = $this->connexion->prepare($sql);
 		try{
-			$query->execute(['id'=>$id,'email'=>$email]);
-			return true;			
+			$query->execute(['id'=>$id,'email'=>$email, 'token'=>$token]);
+			return true;
 		}catch(PDOException $exception){
 			die('Erreur update email : '.$exception->getMessage());
 		}
 	}
 
-	
+
 	/*
 		Check if an email is already used or an pseudo is already taken
 	*/
@@ -95,7 +114,7 @@ class User extends Model{
 			die('Erreur  : '.$exception->getMessage());
 		}
 	}
-	
+
 	/*
    		Function use when the user confirm his email adress
    */
@@ -116,7 +135,7 @@ class User extends Model{
 		}
   	}
   }
-	
-	
-	
+
+
+
 }
