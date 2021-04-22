@@ -14,6 +14,7 @@ if(isset($message)){
 			echo '<div class="alert error">'.$flash['alert'].'</div>';
 		}
 	}
+}
 ?>
 <form class="form" action="<?=ROOT_URL."login"?>" method="post">
 	<label for="a_pseudo">Pseudo ou email:</label>
@@ -29,5 +30,5 @@ if(isset($message)){
 	<input class="del-add" type="reset" value="Effacer">
 	<input class="del-add" type="submit" required name="login" value="Connexion">
 </form>
-<?php }
+<?php 
 $content=ob_get_clean();

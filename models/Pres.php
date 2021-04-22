@@ -40,12 +40,20 @@ class Pres extends Model{
 
 	//Get all Press records by their genre
 	//args: $genre => the genre of the presses you want
-	public function getPressByGenre(string $genre){
+	public function getPressByGenre(string $genre, $limit=-1){
 		try{
-			$sql="SELECT  p_author_id AS author, p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
-			FROM {$this->table} WHERE p_genre=:genre LIMIT 6";			
-			$query = $this->connexion->prepare($sql);
-			$query->execute(['genre'=>$genre]);		
+			if($limit==-1){
+				$sql="SELECT  p_author_id AS author, p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
+				FROM {$this->table} WHERE p_genre=:genre";			
+				$query = $this->connexion->prepare($sql);
+				$query->execute(['genre'=>$genre]);		
+			}else{
+				$sql="SELECT  p_author_id AS author, p_id AS id, p_title AS title, p_content AS content, DATE(p_created_at) AS 'date', p_genre AS genre 
+				FROM {$this->table} WHERE p_genre=:genre LIMIT {$limit}";			
+				$query = $this->connexion->prepare($sql);
+				$query->execute(['genre'=>$genre]);		
+			}
+			
 			return $query->fetchAll();
 		}catch(PDOException $exception){
 			die('Erreur genre : '.$exception->getMessage());

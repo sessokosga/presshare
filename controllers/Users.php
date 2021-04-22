@@ -40,20 +40,20 @@ class Users extends Controller{
 		return !(empty($last_name) || !preg_match("/^[a-zA-Zéèïëçêâôöòó\- ]+$/", $last_name) || strlen($last_name) > 50);
 	}
 
-
-
-
-
 	public function index(){
 
 	}
 
+	/*
+		Function to handle user registration
+	*/
 	public function signup(){
 		$errors=[];
 		$fields=[];
 		$error = new Errors();
 		$title="Créer un compte";
 		$user = new User();
+		//Check if the user has filled the fields
 		if (!empty($_POST)){
 
 			extract($_POST);
@@ -83,7 +83,9 @@ class Users extends Controller{
 					$errors['password_confirm']=$error->showError("Les mots de passe doivent être identiques");
 				}
 			}
-
+			
+			//Add the user if there is no error
+			//Generate a token and send a confirmation email to the user
 			if($errors === []){
 				$a_password = password_hash($a_password, PASSWORD_BCRYPT);
 				$token = $this->str_random(60);
@@ -109,7 +111,7 @@ class Users extends Controller{
 		Function to login the user
 	*/
 	public function login(){
-		$flash='';
+		$flash='';		
 		if(isset($_SESSION['flash'])){
 			$flash=$_SESSION['flash'];
 			unset($_SESSION['flash']);
@@ -120,23 +122,25 @@ class Users extends Controller{
 		$user = new User();
 		$success = false;
 
-      if(isset($_SESSION['auth'])){
-        $auth = $_SESSION['auth'];
-        $message = "Bienvenu {$auth->a_pseudo}.";
-        $success =true;
-        $this->render('login',compact('title','success','message'));
+	
+      //Redirect the user to the home page if he is already logged in
+	  if(isset($_SESSION['auth'])){       		
+        header('Location: '.ROOT_URL);
       	exit();
       }
 
+		//Check if the user has filled the fields
 		if (!empty($_POST)){
 			extract($_POST);
            $remember_token='';
+			//Generate a token if the user want to be remembered
 			if(isset($a_remember)){
               $remember_token = $this->str_random(250);
             }
 			$auth = $user->login($a_pseudo,$remember_token);
 
 			$fields['pseudo']=$a_pseudo;
+			//Check if the user's credentials are invalid
 			if(!$auth){
 				$message='Email ou mot de passe incorrect';
 			}else{
@@ -162,7 +166,9 @@ class Users extends Controller{
 			$this->render('login',compact('title','message','success','fields'));
 
 
-		}elseif(isset($_COOKIE['a_remember'])){
+		}
+		//Log the user using cookies
+		elseif(isset($_COOKIE['a_remember'])){
           $token=explode('-',$_COOKIE['a_remember']);
           $auth=$user->getOne($token[0]);
 
@@ -228,7 +234,9 @@ class Users extends Controller{
     $id = $_SESSION['auth']->a_id;
     $action = empty($action) ? 'main' : $action;
 	$auth = $user->getOne($id);
-    if($action==='profile'){
+    
+	//Handle profile settings
+	if($action==='profile'){
       if(isset($_POST['a_pseudo'])){
 		extract($_POST);
        $fields['pseudo']=$a_pseudo;
@@ -266,7 +274,8 @@ class Users extends Controller{
       $this->render('settings',compact('title','action','auth'));
     }else{
       switch($action){
-        case 'email':
+		//Handle email settings
+		case 'email':
           if(isset($_POST['a_email'])){
             extract($_POST);
 
@@ -291,6 +300,7 @@ class Users extends Controller{
             $this->render('settings',compact('title','action','message','a_email','errors','success'));
           }
         break;
+		//Handle password settings
         case 'password':
 			if(isset($_POST['a_password'])){
 				extract($_POST);				

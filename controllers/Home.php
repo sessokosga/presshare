@@ -7,6 +7,6 @@ class Home extends Controller{
 		//$this->loadModel('Pres');
 		$pres= new Pres();		
 		$this->render('home',['title'=>'Accueil', 'last_press'=>$pres->getLastPress(),
-								'text_press'=>$pres->getPressByGenre('Text'), 'link_press'=>$pres->getPressByGenre('Link')]);
+								'text_press'=>$pres->getPressByGenre('Text',6), 'link_press'=>$pres->getPressByGenre('Link',6)]);
 	}	
 }
