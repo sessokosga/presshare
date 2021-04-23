@@ -7,9 +7,9 @@ abstract class Model{
 
 	//Login informations
 	private $dbname="presshare";
-	private $host="localhost:3307";
-	private $username="util";
-	private $password="util";
+	private $host="localhost:3306";
+	private $username="root";
+	private $password="";
 
 	//Connexion
 	protected $_connexion;
