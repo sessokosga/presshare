@@ -1,6 +1,6 @@
 <?php
-/*
-	Fonction qui affihe les Press dans des div ave des bords arrondis
+/*	
+	Show press in a rounded div
 */
 function showPresDiv($press){
 	ob_start();

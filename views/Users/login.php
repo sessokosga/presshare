@@ -1,5 +1,5 @@
 <?php ob_start();
-echo '<h2 class="center">Connexion</h2>';
+echo '<h2 class="center">Log in</h2>';
 if(isset($message)){
 	if($success){
 		echo '<div class="alert success">'.$message.'</div>';
@@ -17,18 +17,18 @@ if(isset($message)){
 }
 ?>
 <form class="form" action="<?=ROOT_URL."login"?>" method="post">
-	<label for="a_pseudo">Pseudo ou email:</label>
+	<label for="a_pseudo">Pseudo or email:</label>
 	<input type="text" required name="a_pseudo" placeholder="Ex: senor16" value="<?=isset($fields['pseudo'])?$fields['pseudo']:''?>">
 	<br>
-	<label for="a_password">Mot de passe:</label>
-	<input type="password" required name="a_password" placeholder="votremotdepasse">
+	<label for="a_password">Password <small>(<a href="<?=ROOT_URL?>restore">forgot password</a>)</small>:</label>
+	<input type="password" required name="a_password" placeholder="yourpassword">
 	<br>
 	<label for="a_remember">
       <input type="checkbox" name="a_remember" id="a_remember" value="1">
-	Se souvenir de moi</label>
+	Remember ne</label>
 
-	<input class="del-add" type="reset" value="Effacer">
-	<input class="del-add" type="submit" required name="login" value="Connexion">
+	<input class="del-add" type="reset" value="Reset">
+	<input class="del-add" type="submit" required name="login" value="Log in">
 </form>
 <?php 
 $content=ob_get_clean();

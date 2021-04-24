@@ -51,6 +51,33 @@ class User extends Model{
 			die('Erreur login user : '.$exception->getMessage());
 		}
 	}
+	
+	/*
+		Get the id of a user knowing his email address
+	*/
+	public function getID($email){
+		$sql = "SELECT a_id AS id FROM {$this->table} WHERE a_email =:email";
+		$query = $this->connexion->prepare($sql);
+		try{
+			$query->execute(['email'=>$email]);
+			return $query->fetch();
+		}catch(PDOException $exception){
+			die('Erreur get ID : '.$exception->getMessage());
+		}
+	}
+	
+	/*
+		Store a token to reset a password
+	*/
+	public function resetPassword($id, $token){
+		$sql = "UPDATE {$this->table} SET a_reset_token=:token, a_reset_at = NOW() WHERE a_id = :id";
+		$query = $this->connexion->prepare($sql);
+		try{
+			$query->execute(['token'=>$token, 'id'=>$id]);			
+		}catch(PDOException $exception){
+			die('Erreur reset password : '.$exception->getMessage());
+		}
+	}
 
 	/*
 		Update user's informations
@@ -75,7 +102,7 @@ class User extends Model{
 	/*
 		Update user's password
 	*/
-	public function updatePassword(int $id, string $password){
+	public function updatePassword($id, $password){
 		$sql = "UPDATE {$this->table} SET a_password = :password WHERE a_id = :id";
 		$query = $this->connexion->prepare($sql);
 		try{
@@ -85,6 +112,9 @@ class User extends Model{
 			die('Erreur update password : '.$exception->getMessage());
 		}
 	}
+	
+	
+	
 
 	/*
 		Update user's email
@@ -99,7 +129,20 @@ class User extends Model{
 			die('Erreur update email : '.$exception->getMessage());
 		}
 	}
-
+	
+	/*
+		
+	*/
+	public function getReset($id){		
+		try{
+			$sql = "SELECT * FROM {$this->table} WHERE a_id = :id AND a_reset_at > DATE_SUB(NOW(), INTERVAL 30 MINUTE)";
+			$query = $this->connexion->prepare($sql);
+			$query->execute(['id'=>$id ]);
+			return $query->fetch();
+		}catch(PDOException $exception){
+			die("Erreur getReset ".$exception->getMessage());
+		}
+	}
 
 	/*
 		Check if an email is already used or an pseudo is already taken

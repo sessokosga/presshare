@@ -90,6 +90,10 @@ h3,.center{
 	display:inline-block;
 }
 
+.container{
+	min-height:300px;
+}
+
 body{
 	margin:auto;
 	max-width:80%;
@@ -104,6 +108,7 @@ body{
 .settings li a{
 	text-decoration:none;
 	color:black;
+	display:block;
 }
 
 .settings li a:hover{
@@ -225,7 +230,10 @@ img{
 	affichage d'erreur
 */
 .error, .field-error{
-	border : 2px solid tomato !important;
+	border : 2px solid tomato !important;	
+}
+
+.error{
 	text-align:center;
 }
 

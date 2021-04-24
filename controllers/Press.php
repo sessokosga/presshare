@@ -13,7 +13,7 @@ class Press extends Controller{
 	public function checkLogin(){
 		if(!isset($_SESSION['auth'])){
 			header('Location: '.ROOT_URL.'login');
-			$_SESSION['flash']['alert']='Veuiller vous connecter';
+			$_SESSION['flash']['alert']='You must be logged';
 			$_SESSION['flash']['type']='error';
 			exit();
 		}
@@ -30,7 +30,7 @@ class Press extends Controller{
 		
 		
 		if($id != $author){
-			$error->render('errors',['code'=>404, 'message'=>'La page demandée n\'existe pas']);
+			$error->render('errors',['code'=>404, 'message'=>'Page not found']);
 		}
 		
 	}
@@ -42,12 +42,12 @@ class Press extends Controller{
 	*/
 	public function index(string $genre=''){			
 		if($genre===''){
-			$this->render('index',['title'=>'Press', 'content'=>'Bienvenu dans Press']);
+			$this->render('index',['title'=>'Press', 'content'=>'Welcome to Press']);
 		}else{
 			$title=ucfirst(strtolower($genre));			
 			$pres = new Pres();
 			$press = $pres->getPressByGenre(str_replace('s','',$title));		
-			$message=count($press)." Press trouvés";
+			$message=count($press)." Press found(s)";
 			$this->render('press',compact('title','message','press'));
 		}
 	}
@@ -58,15 +58,16 @@ class Press extends Controller{
 	public function add(){
 		$error = new Errors();
 		$this->checkLogin();
+		$result=[];
+		$result['success']=false;
 		$title="Ajouter un Press";			
 		if(isset($_POST['p_title']) && isset($_POST['p_content']) && isset($_POST['p_genre'])){
 			extract($_POST);
 			if(strlen($p_title)>0 && strlen($p_content)>1 &&  in_array($p_genre,['Text','Link'])){								
 				$pres = new Pres();
-				if($pres->exists($p_title)){
-					$result['success']=false;					
-					$result['message'] = "Champ(s) non valide(s)";
-					$result['errorInfo']['title']=$error->showError("Ce titre est déja utilisé");					
+				if($pres->exists($p_title)){					
+					$result['message'] = "Fields not valids";
+					$result['errorInfo']['title']=$error->showError("This title is already used");					
 					$result['title']=$p_title;
 					$result['content']=$p_content;
 					$result['genre']=$p_genre;
@@ -75,14 +76,14 @@ class Press extends Controller{
 					$success = $pres->add(htmlspecialchars($p_title),htmlspecialchars($p_content),$p_genre,$_SESSION['auth']->a_id);
 					if($success){
 						$result['success']=true;
-						$result['message'] = "Press ajouté avec success.";					
+						$result['message'] = "Press successfully added.";					
 					}else{
-						$result['success']=false;
-						$message="Une erreur s'est produite. Veuiller réessayer";
+						$result['message']="An error occured. Please try again";
 					}
 				}
-			}else{				
-				$message= "Veuiller remplir tous les champs.";
+			}else{	
+			
+				$result['message']= "You must fill all the fields";
 			}			
 			$this->render('add',compact('result', 'title'));
 		}else{
@@ -114,24 +115,27 @@ class Press extends Controller{
 		$error = new Errors();
 		$this->checkLogin();
 		$this->checkAuthor($id);		
-		
-		$title = "Modifier un Press";		
+		$result=[];
+		$result['success']=false;
+		$title = "Edit a Press";		
 		$pres = new Pres();
 		$press = $pres->getPress($id);
 		if($press){
 			if(isset($_POST['p_title']) && isset($_POST['p_content']) && isset($_POST['p_genre'])){
-				extract($_POST);							
+				extract($_POST);		
+				$fields['title']=$p_title;				
+				$fields['content']=$p_content;				
 				$pres = new Pres();								
 				$p_content = str_replace("[enter]","\n",$p_content);
 				$res = $pres->update($id,htmlspecialchars($p_title), htmlspecialchars($p_content), $p_genre);
 				$result['success']=$res['success'];
 				if($result['success']){
-					$result['message']= "Press modifié ave succès";
+					$result['message']= "Press successfully edited";
 				}else{
-					$result['message']="Une erreur s'est produite. Veuiller réessayer.";
-					if($res['code']=="23000"){
-						$result['message'] = "Champ(s) non valide(s)";
-						$result['errorInfo']['title']=$error->showError("Ce titre est déja utilisé");										
+					$result['message']="An error occured. Please try again";
+					if($res['code']=="23000"){						
+						$result['message'] = "Field(s) invalid(s)";
+						$result['errorInfo']['title']=$error->showError("This title is already used");										
 					}
 				}
 				
@@ -141,7 +145,7 @@ class Press extends Controller{
 			$this->render('update',compact('title','press'));
 		}else{			
 			$error = new Errors();
-			$error->render('errors',['code'=>404, 'message'=>'La page demandée n\'existe pas']);			
+			$error->render('errors',['code'=>404, 'message'=>'Page not found']);			
 		}
 	}
 
@@ -157,11 +161,11 @@ class Press extends Controller{
 		$press = $pres->getPress($id);
 		if($press){
 			$success = $pres->del($id);
-			$message=$success ? "Press supprimé avec succès" : "Une erreur s'est produite. Veuiller réessayer.";
+			$message=$success ? "Press successfully deleted" : "An error occured. Please try again.";
 			$this->render('delete',compact('title','success','message'));
 		}else{			
 			$error = new Errors();
-			$error->render('errors',['code'=>404, 'message'=>'La page demandée n\'existe pas']);			
+			$error->render('errors',['code'=>404, 'message'=>'Page not found']);			
 		}
 	}
 	
@@ -170,18 +174,18 @@ class Press extends Controller{
 		args : $q the key
 	*/
 	public function search(string $q){
-		$title="Résultats de recherche" ;		
+		$title="Search results" ;		
 		$q = trim($q);
 		if(strlen($q)>0){
 			extract($_GET);
 			$q=htmlspecialchars($q);
 			$pres = new Pres();
 			$press = $pres->search($q);
-			$title='"'.$q."' Résultats de recherche" ;
-			$message = count($press)." Press trouvés";
+			$title='"'.$q."' Search results" ;
+			$message = count($press)." Press found(s)";
 			$this->render('search',compact('title','press','message'));
 		}else{
-			$message = "Veuiller entrer un mot clé";
+			$message = "Enter a search key";
 			$this->render('search',compact('title','message'));
 		}
 	}

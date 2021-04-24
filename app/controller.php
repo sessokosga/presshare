@@ -55,6 +55,10 @@ abstract class Controller{
 				padding:10px;
 				margin-bottom: 20px;
 			}
+			.container{
+				min-height:200px;
+			}
+			
 			.logo{	
 				grid-area: logo;
 				margin:0;
@@ -92,11 +96,11 @@ abstract class Controller{
 			<h1 class="logo"><a href="'.ROOT_URL.'">
 			<img id="logo-share" src="'.ROOT_URL.'svg/share-alt-mini.svg" class="svg" alt="logo">
 			<img id="logo-clipboard" class="svg" src="'.ROOT_URL.'svg/clipboard-mini.svg" alt="logo">PressShare</a></h1>
-		</header>'.
-		
+		</header>
+		<div class="container">'.
 		$message
-		
-		.'<footer>
+		.'</div>
+		<footer>
 			PressShare<br>
 			Copyright &copy 2021
 		</footer>

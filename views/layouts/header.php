@@ -3,22 +3,22 @@
 		<img id="logo-share" src="<?=ROOT_URL?>svg/share-alt.svg"  class="svg" alt="logo">
 		<img id="logo-clipboard" class="svg" src="<?=ROOT_URL?>svg/clipboard.svg" alt="logo">PressShare</a></h1>
 		<form class="form-search" method="get" action="<?=ROOT_URL?>press/search">
-			<input class="q-search" name="q" type="search" placeholder="Rechercher un Press">
-			<button class="btn-search" type="submit"><img class="svg" src="<?=ROOT_URL?>svg/search.svg" alt="Rechercher"></button>			
+			<input class="q-search" name="q" type="search" placeholder="Search a Press">
+			<button class="btn-search" type="submit"><img class="svg" src="<?=ROOT_URL?>svg/search.svg" alt="Search"></button>			
 		</form>
 		<?php
 			if(isset($_SESSION['auth'])):
 		?>
 			<ul class="menu">
-				<li><a href="<?=ROOT_URL.'logout'?>">Déconnexion</a></li>
-				<li><a href="<?=ROOT_URL.'settings'?>">Paramètres</a></li>
+				<li><a href="<?=ROOT_URL.'logout'?>">Log out</a></li>
+				<li><a href="<?=ROOT_URL.'settings'?>">Settings</a></li>
 			</ul>
 		<?php
 			else:
 		?>
 			<ul class="menu">
-				<li><a href="<?=ROOT_URL.'login'?>">Connexion</a></li>
-				<li><a href="<?=ROOT_URL.'signup'?>">S'inscrire</a></li>
+				<li><a href="<?=ROOT_URL.'login'?>">Log in</a></li>
+				<li><a href="<?=ROOT_URL.'signup'?>">Sign up</a></li>
 			</ul>
 		<?php
 			endif;			

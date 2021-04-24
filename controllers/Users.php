@@ -51,7 +51,7 @@ class Users extends Controller{
 		$errors=[];
 		$fields=[];
 		$error = new Errors();
-		$title="Créer un compte";
+		$title="Sign up";
 		$user = new User();
 		//Check if the user has filled the fields
 		if (!empty($_POST)){
@@ -61,26 +61,26 @@ class Users extends Controller{
 			$fields['email']=$a_email;
 
 			if(!$this->checkPseudo($a_pseudo)){
-				$errors['pseudo']=$error->showError("Veuiller entrer un pseudo valide (alphanumérique, 3 à 20 caractères)");
+				$errors['pseudo']=$error->showError("Enter a valid pseudo (letters and/or numbers, 3 to 20 caracters)");
 			}else{
 				if($user->exists($a_pseudo)){
-					$errors['pseudo']= $error->showError("Ce pseudo est déja pris");
+					$errors['pseudo']= $error->showError("This pseudo is not available");
 				}
 			}
 
 			if(!$this->checkEmail($a_email)){
-				$errors['email']=$error->showError("Veuiller entrer un email valide ");
+				$errors['email']=$error->showError("Enter a valid email address");
 			}else{
 				if($user->exists($a_email)){
-					$errors['email']= $error->showError("Cet email est déja utilisé pour un autre compte");
+					$errors['email']= $error->showError("This email is used for another account");
 				}
 			}
 
 			if (!$this->checkPassword($a_password)) {
-				$errors['password']=$error->showError("Veuiller entrer un mot de passe valide ( 4 à 255 caractères)");
+				$errors['password']=$error->showError("Enter a valid password ( 4 to 255 caracters)");
 			}else{
 				if ($a_password_confirm !== $a_password) {
-					$errors['password_confirm']=$error->showError("Les mots de passe doivent être identiques");
+					$errors['password_confirm']=$error->showError("Passwords dont match");
 				}
 			}
 			
@@ -90,16 +90,17 @@ class Users extends Controller{
 				$a_password = password_hash($a_password, PASSWORD_BCRYPT);
 				$token = $this->str_random(60);
 				$id=$user->add($a_pseudo,$a_email,$a_password,$token);
-				$message="Votre compte a été créé avec succèes";
+				$message="Your account is successfully created";
 
 
                 $link = ROOT_URL."users/confirm/".$id."/".$token;
-                $content ="Afin de valider votre compte, merci de cliquer sur ce lien :<br> <a href=\"{$link}\">{$link}</a>";
+				$content = "<h3>Welcome {$a_pseudo}.</h3>";
+                $content .="In order to activate your account, please follow this link :<br> <a href=\"{$link}\">{$link}</a>";
 
-              	$this->sendmail($a_email,"Confirmation de votre compte",$content);
+              	$this->sendmail($a_email,"Account activation",$content);
 				$this->render('add',compact('title','message','link')) ;
 			}else{
-				$message = "Champ(s) invalide(s)";
+				$message = "Invalid fields";
 				$this->render('add',compact('title','message','errors','fields'));
 			}
 		}else{
@@ -118,7 +119,7 @@ class Users extends Controller{
 		}
 
 		$fields=[];
-		$title="Connexion";
+		$title="Log in";
 		$user = new User();
 		$success = false;
 
@@ -142,25 +143,25 @@ class Users extends Controller{
 			$fields['pseudo']=$a_pseudo;
 			//Check if the user's credentials are invalid
 			if(!$auth){
-				$message='Email ou mot de passe incorrect';
+				$message='Incorrect credentials';
 			}else{
 				if(!password_verify($a_password, $auth->a_password)){
-					$message='Email ou mot de passe incorrect';
+					$message='Incorrect credentials';
 				}
 			}
 
 			if($auth){
-              if($auth->a_confirmed_at != NULL){
-					$success = true;
-					$message = "Bienvenu {$auth->a_pseudo}.";
+              if($auth->a_confirmed_at != NULL){					
 					$id = $auth->a_id;
-                  $_SESSION['auth']=$auth;
+					$_SESSION['auth']=$auth;
 					if(isset($a_remember)){
 						setcookie('a_remember',$id.'-'.$remember_token.sha1($id.'vienspasici2001'),time()+60*60*24*7);
 					}
+					header('Location: '.ROOT_URL);
+					exit();
               }else{
                 $success=false;
-                $message="Votre compte n'a pas été activé.";
+                $message="Your account has been successfully activated.";
               }
 			}
 			$this->render('login',compact('title','message','success','fields'));
@@ -173,12 +174,11 @@ class Users extends Controller{
           $auth=$user->getOne($token[0]);
 
           if($token[1]===$auth->a_remember_token.sha1($token[0].'vienspasici2001')){
-            $success = true;
-            $message = "Bienvenu {$auth->a_pseudo}.";
+            $success = true;            
 			 $_SESSION['auth']=$auth;
             setcookie('a_remember',$token[0].'-'.$token[1],time()+60*60*24*7);
-
-            $this->render('login', compact('title','success','message'));
+			header('Location: '.ROOT_URL);
+			exit();            
           }else{
 			$this->render('login',compact('title'));
           }
@@ -194,9 +194,9 @@ class Users extends Controller{
   */
   public function logout(){
     setcookie('a_remember',NULL);
-    unset($_SESSION['auth']);
-    $title="Connexion";
- 	$this->render('login',compact('title'));
+    unset($_SESSION['auth']);    
+ 	header('Location: '.ROOT_URL.'login');
+    exit();
 
   }
 
@@ -208,11 +208,11 @@ class Users extends Controller{
 		$error = new Errors();
 			$user = new User();
 			if($user->confirm($id,$token)){
-				$message="Votre compte a été activé avec succès";
+				$message="Your account has been successfully activated.";
 				$this->render('add',compact('title','message'));
 
 			}else{
-				$error->render('errors',['code'=>404, 'message'=>'La page demandée n\'existe pas']);
+				$error->render('errors',['code'=>404, 'message'=>'Page not found']);
 			}
     }
 
@@ -222,11 +222,11 @@ class Users extends Controller{
   public function settings(string $action){
     if(!isset($_SESSION['auth'])){
 		header('Location: '.ROOT_URL.'login');
-		$_SESSION['flash']['alert']='Veuiller vous connecter';
+		$_SESSION['flash']['alert']='You must log in';
 		$_SESSION['flash']['type']='error';
 		exit();
 	}
-	$title="Paramètres";
+	$title="Settings";
     $user = new User();
     $error=new Errors();
     $errors =[];
@@ -245,28 +245,28 @@ class Users extends Controller{
 
 
        if(!$this->checkPseudo($a_pseudo)){
-         $errors['pseudo']=$error->showError('Veuiller entrer un pseudo valide.');
+         $errors['pseudo']=$error->showError('Enter a valid pseudo');
        }
 
 
        if(!$this->checkFirstname($a_first_name)){
-         $errors['first_name']=$error->showError('Veuiller entrer un prénom valide.');
+         $errors['first_name']=$error->showError('Enter a valid first name.');
        }
 
 
        if(!$this->checkLastname($a_last_name)){
-         $errors['last_name']=$error->showError('Veuiller entrer un nom valide.');
+         $errors['last_name']=$error->showError('Enter a valid last name.');
        }
         if($errors==[]){
           if($user->update($id,$a_pseudo,$a_last_name, $a_first_name)){
-            $message="Modification enregistrés avec succcèss.";
+            $message="Modifications saved successfully.";
 			$_SESSION['auth']=$user->getOne($id);
           }else{
             $errors['error']='error';
-            $message="Une erreur s'est produite. Veuiller réessayer.";
+            $message="An error occured. Please try again.";
           }
         }else{
-          $message="Champ(s) invalide(s).";
+          $message="Invalid fields";
         }
 		$auth = $user->getOne($id);
         $this->render('settings',compact('title','action','message','fields','errors'));
@@ -280,20 +280,20 @@ class Users extends Controller{
             extract($_POST);
 
             if(!$this->checkEmail($a_email)){
-              $message="Champ invalide";
-              $errors['email']=$error->showError('Veuiller entrer une adresse email valide');
+              $message="Invalid fields";
+              $errors['email']=$error->showError('Enter a valid email');
             }else{
               $token=$this->str_random(60);
               if($user->updateEmail($id,$a_email,$token)){
                 $link = ROOT_URL."users/confirm/".$id."/".$token;
-                $content ="Afin de valider votre nouvelle adresse email, merci de cliquer sur ce lien :<br> <a href=\"{$link}\">{$link}</a>";
+                $content ="In order to confirm your new email address, please follow this link. :<br> <a href=\"{$link}\">{$link}</a>";
 
-              	$this->sendmail($a_email,"Confirmation de votre nouvelle adresse email",$content);
+              	$this->sendmail($a_email,"Email confirmation",$content);
 				$_SESSION['auth']=$user->getOne($id);
-                $message = "Email modifié avec succès";
+                $message = "Email successfully updated";
                 $success=true;
               }else{
-                $message="Une erreur s'est prodyite. Veuiller réessayer.";
+                $message="An error occured. Please try again.";
               }
             }
 
@@ -305,30 +305,30 @@ class Users extends Controller{
 			if(isset($_POST['a_password'])){
 				extract($_POST);				
 				if(!$this->checkPassword($a_password)){
-					$errors['password']=$error->showError("Veuiller entrer un mot de passe valide ( 4 à 255 caractères)");
+					$errors['password']=$error->showError("Enter a valid pseudo (letters and/or numbers, 3 to 20 caracters)");
 				}
 				if (!$this->checkPassword($a_new_password)) {
-					$errors['new_password']=$error->showError("Veuiller entrer un mot de passe valide ( 4 à 255 caractères)");
+					$errors['new_password']=$error->showError("Enter a valid pseudo (letters and/or numbers, 3 to 20 caracters)");
 				}else{
 					if ($a_new_password_confirm !== $a_new_password) {
-						$errors['new_password_confirm']=$error->showError("Les mots de passe doivent être identiques");
+						$errors['new_password_confirm']=$error->showError("Passwords dont match");
 					}
 				}
 				
 				if($errors !=[]){
-					$message = "Champ(s) invalide(s)";
+					$message = "Invalid fields";
 				}else{
 					if(!password_verify($a_password, $auth->a_password)){						
-						$errors['password']=$error->showError('Mot de passe incorrect');
-						$message = "Champ(s) invalide(s)";
+						$errors['password']=$error->showError('Wrong password');
+						$message = "Invalid fields";
 					}else{
 						$a_new_password = password_hash($a_new_password, PASSWORD_BCRYPT);
 						if($user->updatePassword($id,$a_new_password)){
 							$_SESSION['auth']=$user->getOne($id);
-							$message = "Mot de passe modifié avec succèss.";
+							$message = "Password changed successfully";
 							$success = true;
 						}else{
-							$message = "Une erreur s'est produite, veuiller réessayer.";
+							$message = "An error occured. Please try again";
 						}						
 					}
 					
@@ -340,4 +340,81 @@ class Users extends Controller{
     $this->render('settings',compact('title','action'));
     }
   }
+  
+  
+  /*
+	Send an email to restore a password
+  */
+  public function restore(){
+	$title = "Restore password";
+	$errors=[];
+	$message="Invalid fields";
+	$success = false;
+	$error = new Errors();
+	$user = new User();
+	if(isset($_POST['a_email'])){
+		extract($_POST);
+		$email=$a_email;
+		if(!$this->checkEmail($a_email)){
+			$errors['email']=$error->showError('Enter a valid email');
+		}else{
+			$id = $user->getID($email);
+			if(!$id){
+				$message='There is no account using that email';
+			}else{
+				$id = $id->id;
+				$success = true;				
+				$token = $this->str_random(200);
+				$message="An account was found";
+				$user->resetPassword($id,$token);
+				$content ='Follow this link to restore your password : <a href="'.ROOT_URL.'renew/'.$id.'/'.$token.'">'.ROOT_URL.'renew/'.$id.'/'.$token.'</a>';
+				$this->sendmail($a_email,'Reset password',$content);
+			}
+		}				
+		$this->render('restore',compact('title','message','success','errors','email'));
+	}
+	
+	$this->render('restore',compact('title'));
+  }
+  
+	/*
+		Set new password
+	*/
+	public function renew($id, $token){
+		$title = "Set a new password";
+		$errors=[];
+		$message="Invalid fields";
+		$success = false;
+		$error = new Errors();
+		$user = new User();
+		
+		$tok = $user->getReset($id);
+		if(!$tok || $token != $tok->a_reset_token){
+			$error->render('errors',['code'=>404, 'message'=>'Page not found']);
+		}
+		
+		if(isset($_POST['a_password'])){
+			extract($_POST);
+			if(!$this->checkPassword($a_password)){
+				$errors['password']=$error->showError("Enter a valid password");
+			}else{
+				if($a_password != $a_password_confirm){
+					$errors['password_confirm']=$error->showError("Passwords dont match");
+				}
+			}
+			
+			if($errors==[]){
+				$a_password = password_hash($a_password, PASSWORD_BCRYPT);
+				if($user->updatePassword($id,$a_password)){
+					$_SESSION['auth']=$user->getOne($id);					
+					header('Location: '.ROOT_URL);
+				}else{
+					$message = "An error occured. Please try again";
+				}
+			}
+			
+			$this->render('renew',compact('title','message','success','errors'));
+		}				
+		$this->render('renew',compact('title','errors'));
+	}
 }

@@ -3,6 +3,8 @@ RewriteEngine On
 RewriteRule ^login$ users/login
 RewriteRule ^signup$ users/signup
 RewriteRule ^logout$ users/logout
+RewriteRule ^restore$ users/restore
+RewriteRule ^renew/(.*)$ users/renew/$1
 
 RewriteRule ^settings/?(.*)$ users/settings/$1
 

@@ -38,12 +38,12 @@ if(file_exists($file)){
 			call_user_func_array([$controller,$action], $params);
 		}else{
 
-			$error->render('errors',['code'=>404, 'message'=>'La page demandée n\'existe pas']);
+			$error->render('errors',['code'=>404, 'message'=>'Page not found']);
 		}
 	}else{
-		$error->render('errors',['code'=>404, 'message'=>'La page demandée n\'existe pas']);
+		$error->render('errors',['code'=>404, 'message'=>'Page not found']);
 	}
 }else{
-	$error->render('errors',['code'=>404, 'message'=>'La page demandée n\'existe pas']);
+	$error->render('errors',['code'=>404, 'message'=>'Page not found']);
 }
 
