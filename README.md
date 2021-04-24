@@ -1,5 +1,9 @@
 # ![Logo PressShare](svg/share-alt.svg) ![Logo PressShare](svg/clipboard.svg) PressShare
 *Share the the content your mobile's clipboard with your PC* [Access to the demo](https://pressshare.000webhostapp.com)  
+Test account :  
+- pseudo : pseudo
+- password : password  
+
 By *Sesso Kosga Bamokaï Michée*  
 pseudo : *senor16*
   
@@ -59,3 +63,6 @@ There are some functionnalities that needed to be added tothe project:
 * Give to the user the possibility to browser all the press or just the *press* he published 
 
 Have good courage. See you soon.
+
+By *Sesso Kosga Bamokaï Michée*  
+pseudo : *senor16*
