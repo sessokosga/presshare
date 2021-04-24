@@ -31,8 +31,8 @@ SET time_zone = "+00:00";
 CREATE TABLE `author` (
   `a_id` int(10) UNSIGNED NOT NULL,
   `a_pseudo` varchar(20) NOT NULL,
-  `a_first_name` varchar(20) NOT NULL,
-  `a_last_name` varchar(50) NOT NULL,
+  `a_first_name` varchar(20) ,
+  `a_last_name` varchar(50) ,
   `a_password` varchar(255) NOT NULL,
   `a_created_at` datetime DEFAULT current_timestamp(),
   `a_confirmed_at` datetime DEFAULT NULL,
