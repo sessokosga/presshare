@@ -23,7 +23,7 @@ $controller =$params[0]!= ''? ucfirst(strtolower($params[0])) : 'Home';
 
 
 
-$file= ROOT.'Controllers/'.$controller.'.php';
+$file= ROOT.'controllers/'.$controller.'.php';
 if(file_exists($file)){
 //	require_once (ROOT.'controllers/'.$controller.'.php');
 	$controller = "App\\Controllers\\".$controller;
