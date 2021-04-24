@@ -209,7 +209,8 @@ class Users extends Controller{
 			$user = new User();
 			if($user->confirm($id,$token)){
 				$message="Your account has been successfully activated.";
-				$this->render('add',compact('title','message'));
+				$_SESSION['auth']=$user->getOne($id);
+				header('Location: '.ROOT_URL);
 
 			}else{
 				$error->render('errors',['code'=>404, 'message'=>'Page not found']);
