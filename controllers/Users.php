@@ -203,7 +203,7 @@ class Users extends Controller
 	{
 		setcookie('a_remember', NULL);
 		unset($_SESSION['auth']);
-		header('Location: ' . ROOT_URL . 'login');
+		header('Location: ' . ROOT_URL . 'users/login');
 		exit();
 	}
 

@@ -42,7 +42,7 @@ if (file_exists($file)) { // if so, continue
 			call_user_func_array([$controller, $action], $params);
 		} else { // Throw an error if the action(method) doesn't exist
 			//$error->render('errors', ['code' => 404, 'message' => 'Page 1 not found']);
-			$error->render('errors', ['code' => 404, 'message' => "the action(method) doesn't exist"]);
+			$error->render('errors', ['code' => 404, 'message' => "the action(method) " . $action . " doesn't exist"]);
 		}
 	} else { // Throw an error if the controller class doesn't exist
 		//$error->render('errors', ['code' => 404, 'message' => 'Page 2 not found']);
