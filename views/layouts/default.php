@@ -10,10 +10,11 @@
 
 <body>
 	<?php require_once ROOT . "views/layouts/header.php"; ?>
-	<?php if (isset($add)) { ?>
-		<a class="button" href="<?= ROOT_URL ?>press/add">Add a press</a>
-	<?php } ?>
+
 	<div class="container">
+		<?php if (isset($add)) { ?>
+			<a class="button" href="<?= ROOT_URL ?>press/add">Add a press</a>
+		<?php } ?>
 		<?= $content ?>
 	</div>
 	<?php require_once ROOT . "views/layouts/footer.php"; ?>
