@@ -1,49 +1,54 @@
 <?php
 session_start();
-define('ROOT', str_replace('index.php','',$_SERVER['SCRIPT_FILENAME']));
-
+// Define the root url
+define('ROOT', str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']));
 $url = $_SERVER['SERVER_ADDR'] == "::1" ? 'localhost' : $_SERVER['SERVER_ADDR'];
-define('ROOT_URL','http://'.$url.'/php/presshare/');
+//define('ROOT_URL', 'http://' . $url . '/php/presshare/');
+define('ROOT_URL', 'http://presshare.test/');
 
-require_once ROOT."vendor/autoload.php";
+require_once ROOT . "vendor/autoload.php";
+
 
 
 use App\Controllers\Errors;
 
-
-
-$params = $_GET['p'];
-//require_once (ROOT.'app/controllers/Errors.php');
+// Errors handler
 $error = new Errors();
 
-$params = explode('/',$params);
+// Get the params from the url
+$params = $_SERVER["REQUEST_URI"];
+$params = explode('/', $params);
+$controller = $params[1] != '' ? ucfirst(strtolower($params[1])) : 'Home';
 
-$controller =$params[0]!= ''? ucfirst(strtolower($params[0])) : 'Home';
-
-
-
-
-$file= ROOT.'controllers/'.$controller.'.php';
-if(file_exists($file)){
-//	require_once (ROOT.'controllers/'.$controller.'.php');
-	$controller = "App\\Controllers\\".$controller;
-	$action = isset($params[1]) ? $params[1] : 'index';
+// Check if the controller's file exists
+$file = ROOT . 'controllers/' . $controller . '.php';
+if (file_exists($file)) { // if so, continue 
+	// Get the controller 
+	$controller = "App\\Controllers\\" . $controller;
+	$action = isset($params[2]) ? $params[2] : 'index';
 	$action = strtolower($action);
-	if(class_exists($controller)){
+	// check if the controller class exists
+	if (class_exists($controller)) { // if so, continue
+		// Create an instance of the controller
 		$controller = new $controller;
-		$action = isset($params[1]) ? $params[1] : 'index';
-		if(method_exists($controller, $action)){
-			unset($params[0]);
+		// Get the action(method) to call
+		$action = isset($params[2]) ? $params[2] : 'index';
+		// Check if the action(method) exists
+		if (method_exists($controller, $action)) { // if so, call the method						
 			unset($params[1]);
-			call_user_func_array([$controller,$action], $params);
-		}else{
-
-			$error->render('errors',['code'=>404, 'message'=>'Page not found']);
+			unset($params[2]);
+			if (count($params) > 1)
+				unset($params[0]);
+			call_user_func_array([$controller, $action], $params);
+		} else { // Throw an error if the action(method) doesn't exist
+			//$error->render('errors', ['code' => 404, 'message' => 'Page 1 not found']);
+			$error->render('errors', ['code' => 404, 'message' => "the action(method) doesn't exist"]);
 		}
-	}else{
-		$error->render('errors',['code'=>404, 'message'=>'Page not found']);
+	} else { // Throw an error if the controller class doesn't exist
+		//$error->render('errors', ['code' => 404, 'message' => 'Page 2 not found']);
+		$error->render('errors', ['code' => 404, 'message' => "the controller class doesn't exist"]);
 	}
-}else{
-	$error->render('errors',['code'=>404, 'message'=>'Page not found']);
+} else { // Throw an error if the required controller's file doesn't exist
+	//$error->render('errors', ['code' => 404, 'message' => 'Page 3 not found']);
+	$error->render('errors', ['code' => 404, 'message' => "the required controller's file '" . $controller . "' doesn't exist"]);
 }
-

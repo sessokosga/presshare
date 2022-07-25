@@ -10,7 +10,7 @@ if(isset($message)){
 	}
 }
 ?>	
-<form class="form" action="<?=ROOT_URL."signup"?>" method="post">	
+<form class="form" action="<?=ROOT_URL."users/signup"?>" method="post">	
 	<label for="a_pseudo">Pseudo <small>(20 caracters max)</small>:</label>
 	<?=isset($errors['pseudo'])?$errors['pseudo']:''?>
 	<input type="text" required name="a_pseudo" value="<?=isset($fields['pseudo'])?$fields['pseudo']:''?>" placeholder="Ex: senor16">
