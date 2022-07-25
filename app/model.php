@@ -8,17 +8,12 @@ use \PDOException;
 abstract class Model
 {
 	//Login informations
-	//MySQL
-	private $dbname = "presshare";
-	private $host = "localhost:3306";
-	private $username = "root";
+	private $db = "pgsql"; // `mysql` or `pgsql`
+	protected $dbname = "presshare";
+	private $host = "";
+	private $username = "";
 	private $password = "";
-	//PostgreSQL
-	/*private $dbname = "presshare";
-	private $host = "localhost";
-	private $port = "5432";
-	private $username = "Sesso";
-	private $password = "sesso";*/
+	private $port = "";
 	//Connexion
 	protected $_connexion;
 
@@ -26,21 +21,34 @@ abstract class Model
 	public $id;
 	public $table = "";
 
+	function setLoginInfo()
+	{
+		if ($this->db == "mysql") {
+			$this->host = "localhost:3306";
+			$this->username = "root";
+			$this->password = "";
+		} else if ($this->db == "pgsql") {
+			$this->host = "localhost";
+			$this->port = "5432";
+			$this->username = "postgres";
+			$this->password = "senor16";
+		}
+	}
+
 	//Function with connects to the database
 	//It returns an PDO object
 	public function getConnexion()
 	{
 		$this->connexion = null;
+		$this->setLoginInfo();
 		try {
-			//MySQL
-
-			$this->connexion = new PDO("mysql:host=" . $this->host . "; dbname=" . $this->dbname, $this->username, $this->password);
-			$this->connexion->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+			if ($this->db == "mysql") { //MySQL
+				$this->connexion = new PDO("mysql:host=" . $this->host . "; dbname=" . $this->dbname, $this->username, $this->password);
+			} else if ($this->db == "pgsql") { //PostgreSQL
+				$this->connexion = new PDO("pgsql:host=" . $this->host . ";dbname=" . $this->dbname, $this->username, $this->password);
+			}
 			$this->connexion->exec("set names utf8");
-
-			//PostgreSQL
-			/*$this->connexion = new PDO("pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->dbname, $this->username, $this->password);
-			$this->connexion->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);*/
+			$this->connexion->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 			$this->connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $exception) {
 			die("Erreur Connexion " . $exception->getMessage());
@@ -52,7 +60,7 @@ abstract class Model
 	public function getAll()
 	{
 		try {
-			$sql = "SELECT * FROM " . $this->table;
+			$sql = "SELECT * FROM " . $this->dbname . '.' . $this->table;
 			$query = $this->connexion->prepare($sql);
 			$query->execute();
 			return $query->fetchAll();
@@ -66,7 +74,7 @@ abstract class Model
 	public function getOne($id)
 	{
 		try {
-			$sql = "SELECT * FROM {$this->table} WHERE a_id = :id";
+			$sql = "SELECT * FROM {$this->dbname}.{$this->table} WHERE a_id = :id";
 			$query = $this->connexion->prepare($sql);
 			$query->execute(['id' => $id]);
 			return $query->fetch();
@@ -80,7 +88,7 @@ abstract class Model
 	public function search(string $q)
 	{
 		try {
-			$sql = "SELECT p_id AS id, p_title AS title, p_content AS content, p_genre AS genre, DATE(p_created_at) AS 'date' FROM " . $this->table;
+			$sql = "SELECT p_id AS id, p_title AS title, p_content AS content, p_genre AS genre, DATE(p_created_at) AS \"date\" FROM {$this->dbname}.{$this->table}";
 			$sql = $sql . " WHERE p_title LIKE ('%" . $q . "%') OR p_content LIKE ('%" . $q . "%')";
 			$query = $this->connexion->prepare($sql);
 			$query->execute();
@@ -96,7 +104,7 @@ abstract class Model
 	public function del($id)
 	{
 		try {
-			$sql = "DELETE FROM " . $this->table . " WHERE p_id=" . $id;
+			$sql = "DELETE FROM " . $this->dbname . '.' . $this->table . " WHERE p_id=" . $id;
 			$query = $this->connexion->prepare($sql);
 			$query->execute();
 			return true;

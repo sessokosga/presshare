@@ -20,7 +20,7 @@ if (isset($message)) {
 	<label for="a_pseudo">Pseudo or email:</label>
 	<input type="text" required name="a_pseudo" placeholder="Ex: senor16" value="<?= isset($fields['pseudo']) ? $fields['pseudo'] : '' ?>">
 	<br>
-	<label for="a_password">Password <small>(<a href="<?= ROOT_URL ?>restore">forgot password</a>)</small>:</label>
+	<label for="a_password">Password <small>(<a href="<?= ROOT_URL ?>users/restore">forgot password</a>)</small>:</label>
 	<input type="password" required name="a_password" placeholder="yourpassword">
 	<br>
 	<label for="a_remember">
