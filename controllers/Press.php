@@ -188,6 +188,7 @@ class Press extends Controller
 		if (strlen($q) > 0) {
 			extract($_GET);
 			$q = htmlspecialchars($q);
+			$q = str_replace("?q=", '', $q);
 			$pres = new Pres();
 			$press = $pres->search($q);
 			$title = '"' . $q . '" Search results';

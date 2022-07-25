@@ -9,7 +9,7 @@ abstract class Model
 {
 	//Login informations
 	private $db = "pgsql"; // `mysql` or `pgsql`
-	protected $dbname = "presshare";
+	protected $dbname = "";
 	private $host = "";
 	private $username = "";
 	private $password = "";
@@ -23,6 +23,7 @@ abstract class Model
 
 	function setLoginInfo()
 	{
+		$this->dbname = "presshare";
 		if ($this->db == "mysql") {
 			$this->host = "localhost:3306";
 			$this->username = "root";

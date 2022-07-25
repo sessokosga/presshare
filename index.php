@@ -2,8 +2,15 @@
 session_start();
 // Define the root url
 define('ROOT', str_replace('index.php', '', $_SERVER['SCRIPT_FILENAME']));
-$url = $_SERVER['SERVER_ADDR'] == "::1" ? 'localhost' : $_SERVER['SERVER_ADDR'];
-//define('ROOT_URL', 'http://' . $url . '/php/presshare/');
+
+/* Engine specific ROOT_URL */
+
+// Use with Apache
+/*$url = $_SERVER['SERVER_ADDR'] == "::1" ? 'localhost' : $_SERVER['SERVER_ADDR'];
+$url = $url . ':' . $_SERVER['SERVER_PORT'];
+define('ROOT_URL', 'http://' . $url . '/presshare/');*/
+
+// Use with Nginx
 define('ROOT_URL', 'http://presshare.test/');
 
 require_once ROOT . "vendor/autoload.php";
@@ -16,7 +23,7 @@ use App\Controllers\Errors;
 $error = new Errors();
 
 // Get the params from the url
-$params = $_SERVER["REQUEST_URI"];
+$params = str_replace(basename(ROOT) . '/', '', $_SERVER["REQUEST_URI"]);
 $params = explode('/', $params);
 $controller = $params[1] != '' ? ucfirst(strtolower($params[1])) : 'Home';
 
